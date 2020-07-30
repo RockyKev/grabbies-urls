@@ -1,7 +1,7 @@
 const fs = require('fs');
-const cheerio = require('cheerio');
-const got = require('got');
-
+const cheerio = require('cheerio'); // does the web-scraping
+const got = require('got');  // does the http request
+const csv = require('fast-csv');
 
 //TODO LIST: 
 // 1. Put it in a json file or csv file. 
@@ -49,7 +49,37 @@ function convertToText(result) {
     });
 }
 
-// csv version using fast-csv
+// csv version using fast-csv 
+// https://stackabuse.com/reading-and-writing-csv-files-with-node-js/
+const dummyData = [
+    {
+        name: 'John',
+        surname: 'Snow',
+        age: 26,
+        gender: 'M'
+    }, {
+        name: 'Clair',
+        surname: 'White',
+        age: 33,
+        gender: 'F',
+    }, {
+        name: 'Fancy',
+        surname: 'Brown',
+        age: 78,
+        gender: 'F'
+    }
+];
+
+function convertToCSV(data, outputName) {
+
+    const ws = fs.createWriteStream(outputName + ".csv");
+
+    csv.write(data, { headers: true })
+        .pipe(ws);
+
+    console.log("Report Generated!");
+}
+
 
 
 // 2. keep the URL
@@ -323,6 +353,8 @@ const wpVersions = {
 // Initial start code
 function start() {
     //grab links if it includes /wp-includes/
+
+    convertToCSV(dummyData, "imma-big-dummy");
 
     // bucketOfUrls.forEach(url =>
 
