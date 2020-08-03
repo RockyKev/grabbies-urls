@@ -208,6 +208,7 @@ const wpVersions = {
     '4.8.11': "October 14: 2019",
     '4.8.12': "December 12: 2019",
     '4.8.13': "April 29: 2020",
+    '4.8.14': "June 10, 2020",
     '4.9': "November 15: 2017",
     '4.9.1': "November 29: 2017",
     '4.9.2': "January 16: 2018",
@@ -223,7 +224,7 @@ const wpVersions = {
     '4.9.12': "October 14: 2019",
     '4.9.13': "December 12: 2019",
     '4.9.14': "April 29: 2020",
-    '5': "December 6: 2018",
+    // '5': "December 6: 2018",
     '5.0.1': "December 12: 2018",
     '5.0.2': "December 19: 2018",
     '5.0.3': "January 9: 2019",
@@ -251,5 +252,6 @@ const wpVersions = {
     '5.3.3': "April 29: 2020",
     '5.4': "March 31: 2020",
     '5.4.1': "April 29: 2020",
+    '5.4.2': "June 10: 2020",
 }
 module.exports = wpVersions;
