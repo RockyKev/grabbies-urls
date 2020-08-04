@@ -57,11 +57,10 @@ function start() {
 
     // create a function that it's only goal is to get the url link and return it.
     // when the promise is finished, it spitsit outl.
-
+    // this is redundant - https://codereview.stackexchange.com/questions/123577/using-fetch-and-a-new-promise-object-to-get-api-results
     const returnAllScriptsFromSite = (url) => {
         return new Promise((resolve, reject) => {
             got(url).then(res => {
-
 
                 console.log("starting on: ", url);
                 const $ = cheerio.load(res.body);
@@ -89,26 +88,55 @@ function start() {
                     resolve(linkContent);
                 }, 1000)
 
-
-            }).catch(alert)
+            })
         })
     }
 
-    // arrayOfPromises = [
-    //     returnAllScriptsFromSite("https://www.aol.com/"),
-    //     returnAllScriptsFromSite("https://www.yahoo.com/")
-    // ]
+    const returnAllScriptsFromSiteV2 = (url) => {
+        got(url).then(res => {
 
-    Promise.all(bucketOfUrls
-        .map(x => returnAllScriptsFromSite(x))).then(result => {
-            console.log("promise ->");
-            console.log(result);
-            convertToCSV(result, "results-10-57am");
-        });
+            console.log("starting on: ", url);
+            const $ = cheerio.load(res.body);
 
-}
+            let linkContent = {};
+
+            $('script') // pulls all 'script' tags from res
+                .filter(isIncludes)
+                .filter(checkForVersionMatch)
+                .each((i, link) => {
+
+                    linkContent["site"] = url;
+                    linkContent["version"] = link.version;
+                    linkContent["link"] = link.attribs.src;
+
+                    console.log(url);
+                    console.log(link.version);
+                    console.log(link.attribs.src);
+                })
+
+            console.log("inside filter");
+            console.log("linkContent", linkContent);
+
+            return linkContent;
+
+        })
+
+        arrayOfPromises = [
+            returnAllScriptsFromSite("https://www.aol.com/"),
+            returnAllScriptsFromSite("https://www.yahoo.com/")
+        ]
+
+        Promise.all(bucketOfUrls
+            .map(x => returnAllScriptsFromSiteV2(x)))
+            .then(result => {
+                console.log("promise ->");
+                console.log(result);
+                convertToCSV(result, "results-11-35am");
+            })
+
+    }
 
 
-//initialize function 
-start();
+    //initialize function 
+    start();
 
