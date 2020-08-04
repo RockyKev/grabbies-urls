@@ -18,3 +18,55 @@ for (const fruit of wrapObjects) {
 
 // let newObject = Object.entries(wrapObjects).forEach([key, value]) => {
 console.log(wrapObjects);
+
+
+
+```
+  // promise callback chain
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
+    function asyncFunction(item, cb) {
+        setTimeout(() => {
+            got(item)
+                .then(res => {
+                    console.log("starting on: ", item);
+
+                    const $ = cheerio.load(res.body);
+                    $('script')
+                        .filter(isIncludes)
+                        .filter(checkForVersionMatch)
+                        .each((i, link) => {
+                            let tempObject = new Object();
+
+                            //const result = link.attribs.src;
+                            console.log("*", link.attribs.src);
+
+
+                            console.log("link.version", link.version);
+                            tempObject.site = item;
+                            tempObject.version = link.version;
+                            tempObject.link = link.attribs.src;
+                            addToCSVObject(itsTheContent, tempObject);
+                        })
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+
+            console.log('done with', item);
+            cb();
+        }, 100);
+    }
+
+    // var theArray = [1, 2, 3, 4, 5];
+
+    let requests = bucketOfUrls.reduce((promiseChain, item) => {
+        return promiseChain.then(() => new Promise((resolve) => {
+            asyncFunction(item, resolve);
+        }));
+    }, Promise.resolve());
+
+    requests.then(() => {
+        console.log("done");
+        console.log(itsTheContent);
+    });
+```
