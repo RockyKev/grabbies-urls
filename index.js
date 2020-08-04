@@ -1,10 +1,12 @@
+require('dotenv').config();
+
 const fs = require('fs');
 const cheerio = require('cheerio'); // does the web-scraping
 const got = require('got');  // does the http request
 const csv = require('fast-csv');
 
 const wpVersions = require('./wpVersions.js');
-const bucketOfUrls = require('./bucketOfUrls.js');
+const bucketOfUrls = require(process.env.URLARRAY);
 
 const wpVersionsArray = Object.keys(wpVersions); //so I can sort/reverse/etc
 const wpVersionsReverse = wpVersionsArray.reverse();
@@ -16,6 +18,11 @@ const wpVersionsReverse = wpVersionsArray.reverse();
 // 4. Maybe make it accurate by identifying all the wordpress versions? (https://codex.wordpress.org/WordPress_Versions)
 // 5. Make it give you the root URL. 
 
+// if (process.env.DEV) {
+//     const bucketOfUrls = require('./bucketOfUrls.js');
+// } else {
+//     const bucketOfUrls = require('./bucketOfUrls-sample.js');
+// }
 
 
 
