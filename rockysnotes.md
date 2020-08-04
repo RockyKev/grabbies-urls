@@ -108,4 +108,11 @@ console.log(wrapObjects);
     });
 
 
+
 ```
+
+    // arrayOfPromises = [
+    //     returnAllScriptsFromSite("https://www.processagent.com/"),
+    //     returnAllScriptsFromSite("https://www.texasregisteredagents.com/"),
+    //     returnAllScriptsFromSite("https://www.floridaregisteredagent.net/"),
+    // ]

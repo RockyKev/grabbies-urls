@@ -95,48 +95,59 @@ function start() {
     const returnAllScriptsFromSiteV2 = (url) => {
         got(url).then(res => {
 
-            console.log("starting on: ", url);
-            const $ = cheerio.load(res.body);
+            if (res.ok) {
+                console.log("starting on: ", url);
+                const $ = cheerio.load(res.body);
 
-            let linkContent = {};
+                let linkContent = {};
 
-            $('script') // pulls all 'script' tags from res
-                .filter(isIncludes)
-                .filter(checkForVersionMatch)
-                .each((i, link) => {
+                $('script') // pulls all 'script' tags from res
+                    .filter(isIncludes)
+                    .filter(checkForVersionMatch)
+                    .each((i, link) => {
 
-                    linkContent["site"] = url;
-                    linkContent["version"] = link.version;
-                    linkContent["link"] = link.attribs.src;
+                        linkContent["site"] = url;
+                        linkContent["version"] = link.version;
+                        linkContent["link"] = link.attribs.src;
 
-                    console.log(url);
-                    console.log(link.version);
-                    console.log(link.attribs.src);
-                })
+                        console.log(url);
+                        console.log(link.version);
+                        console.log(link.attribs.src);
+                    })
 
-            console.log("inside filter");
-            console.log("linkContent", linkContent);
+                console.log("inside filter");
+                console.log("linkContent", linkContent);
 
-            return linkContent;
+                setTimeout(() => {
+                    return linkContent;
+                }, 1000)
 
+            }
+
+            return Promise.reject(Error('error'))
+        }).catch(error => {
+            return Promise.reject(Error(error.message))
         })
-
-        arrayOfPromises = [
-            returnAllScriptsFromSite("https://www.aol.com/"),
-            returnAllScriptsFromSite("https://www.yahoo.com/")
-        ]
-
-        Promise.all(bucketOfUrls
-            .map(x => returnAllScriptsFromSiteV2(x)))
-            .then(result => {
-                console.log("promise ->");
-                console.log(result);
-                convertToCSV(result, "results-11-35am");
-            })
-
     }
 
 
-    //initialize function 
-    start();
+
+
+    Promise.all(bucketOfUrls
+        .map(x => returnAllScriptsFromSite(x)))
+        .then(result => {
+            console.log("promise ->");
+            console.log(result);
+            convertToCSV(result, "results-11-35am");
+        }).catch(error => {
+            console.error(error.message)
+        })
+
+
+
+}
+
+
+//initialize function 
+start();
 
