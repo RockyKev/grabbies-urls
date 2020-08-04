@@ -4,6 +4,9 @@ This small package visits the URL, and grabs whatever you want.
 
 ## Tutorial
 
+1. Create a .env file (copy the sample)
+2. Change the name of the file within .env. 
+
 1. Put an array of items in the array slot.
 2. Put what you want to pull.
 3. `node index.js`
