@@ -12,15 +12,6 @@ const wpVersions = require('./wpVersions.js');
 const wpVersionsArray = Object.keys(wpVersions); //so I can sort/reverse/etc
 const wpVersionsReverse = wpVersionsArray.reverse();
 
-//TODO LIST: 
-// 1. Put it in a json file or csv file. [DONE]
-// 2. keep the URL
-// 3. test with other wordpress sites
-// 4. Maybe make it accurate by identifying all the wordpress versions? (https://codex.wordpress.org/WordPress_Versions)
-// 5. Make it give you the root URL. 
-// 6.                     // grab links if it includes /wp-includes/
-
-
 // FILTERS 
 const isIncludes = (i, link) => {
     if (typeof link.attribs.src === 'undefined') {
@@ -106,16 +97,15 @@ function start() {
         })
     }
 
-    arrayOfPromises = [
-        returnAllScriptsFromSite("https://www.processagent.com/"),
-        returnAllScriptsFromSite("https://www.texasregisteredagents.com/")
-    ]
+    // arrayOfPromises = [
+    //     returnAllScriptsFromSite("https://www.aol.com/"),
+    //     returnAllScriptsFromSite("https://www.yahoo.com/")
+    // ]
 
-
-    Promise.all(arrayOfPromises).then(result => {
+    Promise.all(bucketOfUrls.map(x => returnAllScriptsFromSite(x))).then(result => {
         console.log("promise ->");
         console.log(result);
-        convertToCSV(result, "results-10-50am");
+        convertToCSV(result, "results-10-57am");
     });
 
 }
