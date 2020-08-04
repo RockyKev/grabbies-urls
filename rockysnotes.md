@@ -70,3 +70,42 @@ console.log(wrapObjects);
         console.log(itsTheContent);
     });
 ```
+
+
+
+## New test that works
+
+```
+
+    // create a function that it's only goal is to get the url link and return it.
+    // when the promise is finished, it spitsit outl.
+
+    const returnTitleFromSite = (url) => {
+        return new Promise((resolve, reject) => {
+            got(url).then(res => {
+                console.log("starting on: ", url);
+                const $ = cheerio.load(res.body);
+
+                const title = $('title');
+                resolve(title.text());
+
+            })
+        })
+    }
+
+    arrayOfPromises = [
+        returnTitleFromSite("https://www.processagent.com/"),
+        returnTitleFromSite("https://www.texasregisteredagents.com/")
+    ]
+    // returnTitleFromSite("https://www.processagent.com/").then(result => {
+    //     console.log("promise ->");
+    //     console.log(result);
+    // });
+
+    Promise.all(arrayOfPromises).then(result => {
+        console.log("promise ->");
+        console.log(result);
+    });
+
+
+```

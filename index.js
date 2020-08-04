@@ -73,40 +73,51 @@ function addToCSVObject(array, object) {
 // Initial start code
 function start() {
 
-    bucketOfUrls.forEach(url =>
-        got(url)
-            .then(res => {
-                console.log("starting on: ", url);
+    // create a function that it's only goal is to get the url link and return it.
+    // when the promise is finished, it spitsit outl.
 
+    const returnAllScriptsFromSite = (url) => {
+        return new Promise((resolve, reject) => {
+            got(url).then(res => {
+                console.log("starting on: ", url);
                 const $ = cheerio.load(res.body);
+
+                let linkContent = {};
 
                 $('script') // pulls all 'script' tags from res
                     .filter(isIncludes)
                     .filter(checkForVersionMatch)
                     .each((i, link) => {
-                        let tempObject = new Object();
 
-                        console.log("*", link.attribs.src);
-                        console.log("link.version", link.version);
-                        tempObject.site = url;
-                        tempObject.version = link.version;
-                        tempObject.link = link.attribs.src;
-                        addToCSVObject(itsTheContent, tempObject);
+                        linkContent["site"] = url;
+                        linkContent["version"] = link.version;
+                        linkContent["link"] = link.attribs.src;
+
+                        console.log(url);
+                        console.log(link.version);
+                        console.log(link.attribs.src);
                     })
+
+                console.log("inside filter");
+                console.log("linkContent", linkContent);
+                resolve(linkContent);
+
             })
-            .catch(err => {
-                console.log(err);
-            })
-    )
+        })
+    }
+
+    arrayOfPromises = [
+        returnAllScriptsFromSite("https://www.processagent.com/"),
+        returnAllScriptsFromSite("https://www.texasregisteredagents.com/")
+    ]
 
 
+    Promise.all(arrayOfPromises).then(result => {
+        console.log("promise ->");
+        console.log(result);
+        convertToCSV(result, "results-10-50am");
+    });
 
-    // After loop is finished - output it into a file. 
-    console.log("finished");
-    console.log(itsTheContent)
-
-    // convertToCSV(dummyData, "imma-big-dummy");
-    // console.log(wpVersions);
 }
 
 
