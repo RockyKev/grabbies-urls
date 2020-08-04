@@ -39,10 +39,8 @@ const checkForVersionMatch = (i, link) => {
 
 }
 
-// 1. Put it in a json file or csv file. 
-
-// csv version using fast-csv 
-// https://stackabuse.com/reading-and-writing-csv-files-with-node-js/
+// Put it in a json file or csv file. 
+// csv version using fast-csv: https://stackabuse.com/reading-and-writing-csv-files-with-node-js/
 
 function convertToCSV(data, outputName) {
 
@@ -54,13 +52,6 @@ function convertToCSV(data, outputName) {
     console.log("Report Generated!");
 }
 
-const itsTheContent = [];
-
-function addToCSVObject(array, object) {
-    array.push(object);
-    console.log("added to CSVObject");
-}
-
 // Initial start code
 function start() {
 
@@ -70,6 +61,8 @@ function start() {
     const returnAllScriptsFromSite = (url) => {
         return new Promise((resolve, reject) => {
             got(url).then(res => {
+
+
                 console.log("starting on: ", url);
                 const $ = cheerio.load(res.body);
 
@@ -91,9 +84,13 @@ function start() {
 
                 console.log("inside filter");
                 console.log("linkContent", linkContent);
-                resolve(linkContent);
 
-            })
+                setTimeout(() => {
+                    resolve(linkContent);
+                }, 1000)
+
+
+            }).catch(alert)
         })
     }
 
@@ -102,11 +99,12 @@ function start() {
     //     returnAllScriptsFromSite("https://www.yahoo.com/")
     // ]
 
-    Promise.all(bucketOfUrls.map(x => returnAllScriptsFromSite(x))).then(result => {
-        console.log("promise ->");
-        console.log(result);
-        convertToCSV(result, "results-10-57am");
-    });
+    Promise.all(bucketOfUrls
+        .map(x => returnAllScriptsFromSite(x))).then(result => {
+            console.log("promise ->");
+            console.log(result);
+            convertToCSV(result, "results-10-57am");
+        });
 
 }
 
