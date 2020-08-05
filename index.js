@@ -4,7 +4,9 @@ const fs = require('fs');
 const cheerio = require('cheerio'); // does the web-scraping
 const got = require('got');  // does the http request
 const csv = require('fast-csv');
+
 const fetch = require('node-fetch');
+const Promise = require("bluebird").Promise;
 
 const bucketOfUrls = require(process.env.URLARRAY);
 const wpVersions = require('./wpVersions.js');
@@ -255,10 +257,11 @@ function start_V2() {
 
 }
 
-function start() {
+function start_V3() {
 
 
     async function fetchHTML(url) {
+        // const data = await got(url);
         const data = await got(url);
         return cheerio.load(data.body);
     };
@@ -270,20 +273,6 @@ function start() {
         return title.text();
     }
 
-    // const getTitle = (url) => {
-    //     return fetch(url)
-    //         // .then((response) => response.text())
-    //         .then((response) => {
-    //             // const doc = new DOMParser().parseFromString(html, "text/html");
-    //             // const title = doc.querySelectorAll('title')[0];
-    //             const $ = cheerio.load(response);
-    //             const title = $('title');
-
-    //             return title;
-    //         });
-    // };
-
-
     var urls = [
         'https://medium.com/',
         'https://frontendnewsletter.com/',
@@ -293,11 +282,49 @@ function start() {
 
     // This one keeps the order the same as the URL list.
     Promise.all(
-        urls.map((url) => getTitle(url))
+        bucketOfUrls.map((url) => getTitle(url))
     ).then((titles) => {
         console.log(titles);
     });
 }
+
+async function start() {
+
+    const urls = [
+        "https://www.processagent.com/",
+        "https://www.texasregisteredagents.com/",
+        "https://www.floridaregisteredagent.net/",
+        "https://www.49dollaridahoregisteredagent.com",
+        "https://www.49dollarmontanaregisteredagent.com",
+        "https://www.aaacorpservice.com",
+        "https://www.activefilings.com",
+        "https://www.agentprocessing.com",
+        "https://www.alabamaregisteredagent.com",
+        "https://www.alaskaregisteredagent.com",
+        "https://www.aregisteredagent.com",
+        "https://www.arizonaregisteredagent.com",
+        // "https://www.arizonastatutoryagent.net",
+        // "https://www.arkansasregisteredagent.com",
+        // "https://www.awesomewyomingregisteredagent.com",
+        // "https://www.beincorporated.com",
+    ]
+
+
+    const promises = await Promise.map(
+        urls => fetch(url),
+        { concurrency: 5 }
+    )
+
+    for (const promise of promises) {
+        const data = await promise.json();
+        console.log(data);
+    }
+
+}
+
+// attempt with bluebird
+// https://aravindballa.com/writings/fetching-things-at-once/
+
 //initialize function 
 start();
 
