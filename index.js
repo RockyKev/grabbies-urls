@@ -6,7 +6,7 @@ const got = require('got');  // does the http request
 const csv = require('fast-csv');
 
 const fetch = require('node-fetch');
-const Promise = require("bluebird").Promise;
+const Promise = require("bluebird");
 
 const bucketOfUrls = require(process.env.URLARRAY);
 const wpVersions = require('./wpVersions.js');
@@ -288,7 +288,7 @@ function start_V3() {
     });
 }
 
-async function start() {
+async function start_V4() {
 
     const urls = [
         "https://www.processagent.com/",
@@ -313,12 +313,69 @@ async function start() {
     const promises = await Promise.map(
         urls => fetch(url),
         { concurrency: 5 }
-    )
+    );
 
     for (const promise of promises) {
         const data = await promise.json();
         console.log(data);
     }
+
+}
+
+async function start() {
+
+    const urls = [
+        "https://www.processagent.com/",
+        "https://www.texasregisteredagents.com/",
+        "https://www.floridaregisteredagent.net/",
+        "https://www.49dollaridahoregisteredagent.com",
+        "https://www.49dollarmontanaregisteredagent.com",
+        // "https://www.aaacorpservice.com",
+        "https://www.activefilings.com",
+        "https://www.agentprocessing.com",
+        "https://www.alabamaregisteredagent.com",
+        "https://www.alaskaregisteredagent.com",
+        "https://www.aregisteredagent.com",
+        "https://www.arizonaregisteredagent.com",
+        "https://www.arizonastatutoryagent.net",
+        "https://www.arkansasregisteredagent.com",
+        "https://www.awesomewyomingregisteredagent.com",
+        "https://www.beincorporated.com",
+    ]
+
+
+    // const promises = await Promise.map(
+    //     urls => fetch(url),
+    //     { concurrency: 5 }
+    // );
+
+
+    async function fetchHTML(url) {
+        // const data = await got(url);
+        const response = await fetch(url);
+        const data = await response.text();
+        //console.log("the data", data)
+        return cheerio.load(data);
+    };
+
+    async function getTitle(url) {
+        const $ = await fetchHTML(url)
+        const title = $('title');
+        console.log("title:", title.text());
+        return title.text();
+    }
+
+    const numbers = [];
+
+    for (var i = 0; i < urls.length; i++) {
+        numbers.push(i);
+        console.log(numbers)
+    }
+
+    const results = await Promise.map(numbers, number => getTitle(urls[number]),
+        { concurrency: 2 }
+    )
+
 
 }
 
