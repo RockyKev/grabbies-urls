@@ -55,6 +55,91 @@ function convertToCSV(data, outputName) {
     console.log("Report Generated!");
 }
 
+async function start() {
+
+    const urls = [
+        // "https://www.processagent.com/",
+        // "https://www.texasregisteredagents.com/",
+        // "https://www.floridaregisteredagent.net/",
+        // "https://www.49dollaridahoregisteredagent.com",
+        // "https://www.49dollarmontanaregisteredagent.com",
+        "https://www.aaacorpservice.com",
+        "https://www.activefilings.com",
+        // "https://www.agentprocessing.com",
+    ]
+
+    async function fetchHTML(url) {
+        // const data = await got(url);
+        const response = await fetch(url)
+            .catch(function (error) {
+                console.log("ITS BROKEN:", error.code);
+            });
+
+        if (!response) {
+            return false;
+        }
+
+        const data = await response.text();
+        return cheerio.load(data);
+    };
+
+    async function getTitle(url) {
+        const $ = await fetchHTML(url);
+
+        if ($) {
+            const title = $('title');
+            console.log("title:", title.text());
+            return title.text();
+        }
+
+    }
+
+    async function getScripts(url) {
+        const $ = await fetchHTML(url);
+
+        if ($) {
+            console.log("starting on: ", url);
+
+            let linkContent = {};
+
+            $('script') // pulls all 'script' tags from res
+                .filter(isIncludes)
+                .filter(checkForVersionMatch)
+                .each((i, link) => {
+
+                    linkContent["site"] = url;
+                    linkContent["version"] = link.version;
+                    linkContent["link"] = link.attribs.src;
+
+                })
+
+            console.log("linkContent", linkContent);
+
+            return linkContent;
+
+        } else {
+            console.log("an error in getScripts on: ", url);
+
+        }
+
+    }
+
+    // Using bluebird Promises Async to avoid break
+    const numbers = [];
+
+    for (var i = 0; i < urls.length; i++) {
+        numbers.push(i);
+        console.log(numbers)
+    }
+
+    const results = await Promise.map(numbers, number => getScripts(urls[number]),
+        { concurrency: 2 }
+    )
+
+
+}
+
+
 // Initial start code
 function start_V1() {
 
@@ -322,77 +407,7 @@ async function start_V4() {
 
 }
 
-async function start() {
 
-    const urls = [
-        "https://www.processagent.com/",
-        "https://www.texasregisteredagents.com/",
-        "https://www.floridaregisteredagent.net/",
-        "https://www.49dollaridahoregisteredagent.com",
-        "https://www.49dollarmontanaregisteredagent.com",
-        "https://www.aaacorpservice.com",
-        // "https://www.activefilings.com",
-        // "https://www.agentprocessing.com",
-        // "https://www.alabamaregisteredagent.com",
-        // "https://www.alaskaregisteredagent.com",
-        // "https://www.aregisteredagent.com",
-        // "https://www.arizonaregisteredagent.com",
-        // "https://www.arizonastatutoryagent.net",
-        // "https://www.arkansasregisteredagent.com",
-        // "https://www.awesomewyomingregisteredagent.com",
-        // "https://www.beincorporated.com",
-    ]
-
-
-    // const promises = await Promise.map(
-    //     urls => fetch(url),
-    //     { concurrency: 5 }
-    // );
-
-
-
-    async function fetchHTML(url) {
-        // const data = await got(url);
-        const response = await fetch(url)
-            .catch(function (error) {
-                console.log("ITS BROKEN:", error);
-            });
-
-        if (!response) {
-            return false;
-        }
-
-        const data = await response.text();
-        return cheerio.load(data);
-    };
-
-    async function getTitle(url) {
-        const $ = await fetchHTML(url);
-
-        if ($) {
-            const title = $('title');
-            console.log("title:", title.text());
-            return title.text();
-        }
-
-    }
-
-    const numbers = [];
-
-    for (var i = 0; i < urls.length; i++) {
-        numbers.push(i);
-        console.log(numbers)
-    }
-
-    const results = await Promise.map(numbers, number => getTitle(urls[number]),
-        { concurrency: 2 }
-    )
-
-
-}
-
-// attempt with bluebird
-// https://aravindballa.com/writings/fetching-things-at-once/
 
 //initialize function 
 start();
