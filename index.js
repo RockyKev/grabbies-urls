@@ -113,6 +113,13 @@ async function start() {
 
                 })
 
+            // check if it's empty
+            // Object.keys(obj).length === 0 && obj.constructor === Object
+            if (Object.keys(linkContent).length === 0 && linkContent.constructor === Object) {
+                linkContent["site"] = url;
+                linkContent["version"] = "Bruh no idea";
+            }
+
             console.log("linkContent", linkContent);
 
             return linkContent;
