@@ -58,9 +58,25 @@ function start() {
     // create a function that it's only goal is to get the url link and return it.
     // when the promise is finished, it spitsit outl.
     // this is redundant - https://codereview.stackexchange.com/questions/123577/using-fetch-and-a-new-promise-object-to-get-api-results
+
+    function gotWithTimeout(url, timeout) {
+        return new Promise((resolve, reject) => {
+            let timer = setTimeout(
+                () => reject(new Error('Request timed out')),
+                timeout
+            );
+
+            got(url).then(
+                response => resolve(response),
+                err => reject(err)
+            ).finally(() => clearTimeout(timer));
+        })
+    }
+
+
     const returnAllScriptsFromSite = (url) => {
         return new Promise((resolve, reject) => {
-            got(url).then(res => {
+            gotWithTimeout(url, 5000).then(res => {
 
                 console.log("starting on: ", url);
                 const $ = cheerio.load(res.body);
