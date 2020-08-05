@@ -58,14 +58,14 @@ function convertToCSV(data, outputName) {
 async function start() {
 
     const urls = [
-        // "https://www.processagent.com/",
-        // "https://www.texasregisteredagents.com/",
-        // "https://www.floridaregisteredagent.net/",
-        // "https://www.49dollaridahoregisteredagent.com",
-        // "https://www.49dollarmontanaregisteredagent.com",
+        "https://www.processagent.com/",
+        "https://www.texasregisteredagents.com/",
+        "https://www.floridaregisteredagent.net/",
+        "https://www.49dollaridahoregisteredagent.com",
+        "https://www.49dollarmontanaregisteredagent.com",
         "https://www.aaacorpservice.com",
         "https://www.activefilings.com",
-        // "https://www.agentprocessing.com",
+        "https://www.agentprocessing.com",
     ]
 
     async function fetchHTML(url) {
@@ -135,6 +135,9 @@ async function start() {
     const results = await Promise.map(numbers, number => getScripts(urls[number]),
         { concurrency: 2 }
     )
+
+    console.log(results);
+    console.log("Everything is finished");
 
 
 }
