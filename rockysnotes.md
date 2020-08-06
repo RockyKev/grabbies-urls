@@ -108,4 +108,13 @@ console.log(wrapObjects);
     });
 
 
+
 ```
+
+    // arrayOfPromises = [
+    //     returnAllScriptsFromSite("https://www.processagent.com/"),
+    //     returnAllScriptsFromSite("https://www.texasregisteredagents.com/"),
+    //     returnAllScriptsFromSite("https://www.floridaregisteredagent.net/"),
+    // ]
+
+    https://www.paddingleft.com/2018/05/10/Resolve-concurrency-limit-with-Bluebird-Promise-map/
