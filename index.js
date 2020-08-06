@@ -55,81 +55,75 @@ function convertToCSV(data, outputName) {
     console.log("Report Generated!");
 }
 
+
+async function fetchHTML(url) {
+    // const data = await got(url);
+    const response = await fetch(url)
+        .catch(function (error) {
+            console.log("ITS BROKEN:", error.code);
+        });
+
+    if (!response) {
+        return false;
+    }
+
+    const data = await response.text();
+    return cheerio.load(data);
+};
+
+async function getTitle(url) {
+    const $ = await fetchHTML(url);
+
+    if ($) {
+        const title = $('title');
+        console.log("title:", title.text());
+        return title.text();
+    }
+
+}
+
+async function getScripts(url) {
+    const $ = await fetchHTML(url);
+
+    if ($) {
+        console.log("starting on: ", url);
+
+        let linkContent = {};
+
+        $('script') // pulls all 'script' tags from res
+            .filter(isIncludes)
+            .filter(checkForVersionMatch)
+            .each((i, link) => {
+
+                linkContent["site"] = url;
+                linkContent["version"] = link.version;
+                linkContent["link"] = link.attribs.src;
+
+            })
+
+        // check if it's empty
+        // Object.keys(obj).length === 0 && obj.constructor === Object
+        if (Object.keys(linkContent).length === 0 && linkContent.constructor === Object) {
+            linkContent["site"] = url;
+            linkContent["version"] = "Bruh no idea";
+            linkContent["link"] = "no link";
+        }
+
+        console.log("linkContent", linkContent);
+
+        return linkContent;
+
+    } else {
+        console.log("an error in getScripts on: ", url);
+
+    }
+
+}
+
+
 async function start() {
 
-    const urls = [
-        "https://www.processagent.com/",
-        "https://www.texasregisteredagents.com/",
-        "https://www.floridaregisteredagent.net/",
-        "https://www.49dollaridahoregisteredagent.com",
-        "https://www.49dollarmontanaregisteredagent.com",
-        "https://www.aaacorpservice.com",
-        "https://www.activefilings.com",
-        "https://www.agentprocessing.com",
-    ]
-
-    async function fetchHTML(url) {
-        // const data = await got(url);
-        const response = await fetch(url)
-            .catch(function (error) {
-                console.log("ITS BROKEN:", error.code);
-            });
-
-        if (!response) {
-            return false;
-        }
-
-        const data = await response.text();
-        return cheerio.load(data);
-    };
-
-    async function getTitle(url) {
-        const $ = await fetchHTML(url);
-
-        if ($) {
-            const title = $('title');
-            console.log("title:", title.text());
-            return title.text();
-        }
-
-    }
-
-    async function getScripts(url) {
-        const $ = await fetchHTML(url);
-
-        if ($) {
-            console.log("starting on: ", url);
-
-            let linkContent = {};
-
-            $('script') // pulls all 'script' tags from res
-                .filter(isIncludes)
-                .filter(checkForVersionMatch)
-                .each((i, link) => {
-
-                    linkContent["site"] = url;
-                    linkContent["version"] = link.version;
-                    linkContent["link"] = link.attribs.src;
-
-                })
-
-            // check if it's empty
-            // Object.keys(obj).length === 0 && obj.constructor === Object
-            if (Object.keys(linkContent).length === 0 && linkContent.constructor === Object) {
-                linkContent["site"] = url;
-                linkContent["version"] = "Bruh no idea";
-            }
-
-            console.log("linkContent", linkContent);
-
-            return linkContent;
-
-        } else {
-            console.log("an error in getScripts on: ", url);
-
-        }
-
-    }
+    const urls = bucketOfUrls;
 
     // Using bluebird Promises Async to avoid break
     const numbers = [];
@@ -143,7 +137,8 @@ async function start() {
         { concurrency: 2 }
     )
 
-    console.log(results);
+    // console.log(results);
+    convertToCSV(results, "results-4-57pm");
     console.log("Everything is finished");
 
 
